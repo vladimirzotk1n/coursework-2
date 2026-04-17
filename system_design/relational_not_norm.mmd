@@ -1,0 +1,76 @@
+erDiagram
+	direction TB
+	Users {
+		integer user_id PK ""  
+		varchar name UK ""  
+		varchar email UK ""  
+		timestamptz created_at  ""  
+	}
+
+	Experiments {
+		integer experiment_id PK ""  
+		integer user_id FK ""  
+		varchar title  ""  
+		text description  ""  
+		timestamptz created_at  ""  
+		timestamptz updated_at  ""  
+	}
+
+	ExperimentRuns {
+		integer run_id PK ""  
+		integer experiment_id FK ""  
+		integer run_number  ""  
+		varchar name  ""  
+		text description  ""  
+		timestamptz created_at  ""  
+		timestamptz updated_at  ""  
+	}
+
+	DataSeries {
+		integer series_id PK ""  
+		integer run_id FK ""  
+		varchar series_name  ""  
+		varchar unit_x  ""  
+		varchar unit_y  ""  
+		text description  ""  
+	}
+
+	DataPoints {
+		integer point_id PK ""  
+		integer series_id FK ""  
+		double x_value  ""  
+		double y_value  ""  
+		double x_uncertainty  ""  
+		double y_uncertainty  ""  
+		integer measurements_order ""
+	}
+
+	Reports {
+		integer report_id PK ""  
+		integer run_id FK ""  
+		varchar title  ""  
+		timestamptz created_at  ""  
+		timestamptz updated_at  ""  
+
+	}
+
+	Files {
+		integer file_id PK ""  
+		integer experiment_id FK ""  
+		integer run_id FK ""  
+		integer report_id FK ""  
+		integer series_id FK ""  
+		text storage_path  ""  
+		varchar mime_type  ""  
+		bigint size_bytes  ""  
+		timestamptz uploaded_at  ""  
+	}
+
+	Users||--o{Experiments:"  "
+	Experiments||--o{ExperimentRuns:"  "
+	ExperimentRuns||--o{DataSeries:"  "
+	DataSeries||--o{DataPoints:"  "
+	ExperimentRuns||--o{Reports:"  "
+	ExperimentRuns||--o{Files:"Не отчеты и серии"
+	Reports||--o{Files:"  "
+	DataSeries||--o|Files:"  "

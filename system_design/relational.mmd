@@ -1,0 +1,102 @@
+erDiagram
+  Users {
+    integer user_id PK
+    varchar username UK
+    varchar email UK
+    timestamptz created_at
+  }
+Experiments {
+    integer experiment_id PK
+    integer user_id FK
+    varchar title
+    text description
+    timestamptz created_at
+    timestamptz updated_at
+  }
+ExperimentRuns {
+    integer run_id PK
+    integer experiment_id FK
+    integer run_number
+    varchar name
+    text description
+    timestamptz created_at
+    timestamptz updated_at
+  }
+DataSeries {
+    integer series_id PK
+    integer run_id FK
+    varchar series_name
+    varchar unit_x
+    varchar unit_y
+    text description
+    timestamptz created_at
+    timestamptz updated_at
+  }
+  DataPoints {
+    integer point_id PK
+    integer series_id FK
+    integer measurement_order
+    double x_value
+    double y_value
+    double x_uncertainty
+    double y_uncertainty
+    timestamptz created_at
+  }
+  Reports {
+    integer report_id PK
+    integer run_id FK
+    varchar title
+    timestamptz created_at
+    timestamptz updated_at
+  }
+  Files {
+    integer file_id PK
+    varchar mime_type
+    text storage_path UK
+    bigint size_bytes
+    timestamptz uploaded_at
+  }
+  RunImages {
+    integer file_id PK, FK
+    integer run_id FK
+  }
+  ReportSourceFile {
+    integer report_id PK, FK
+    integer file_id FK, UK
+  }
+  ReportPdfFile {
+    integer report_id PK, FK
+    integer file_id FK, UK
+  }
+  ReportAttachments {
+    integer file_id PK, FK
+    integer report_id FK
+  }
+  SeriesPlotFile {
+    integer series_id PK, FK
+    integer file_id FK, UK
+  }
+  FileDeletionQueue {
+    bigint id PK
+    text storage_path
+    timestamptz queued_at
+    timestamptz processed_at
+    integer retry_count
+    text last_error
+  }
+
+  Users ||--o{ Experiments : ""
+  Experiments ||--o{ ExperimentRuns : ""
+ExperimentRuns ||--o{ DataSeries : ""
+  DataSeries ||--o{ DataPoints : ""
+ExperimentRuns ||--o{ Reports : ""
+ExperimentRuns ||--o{ RunImages : ""
+  Files ||--o| RunImages : ""
+  Reports ||--o| ReportSourceFile : ""
+  Files ||--o| ReportSourceFile : ""
+  Reports ||--o| ReportPdfFile : ""
+  Files ||--o| ReportPdfFile : ""
+  Reports ||--o{ ReportAttachments : ""
+  Files ||--o| ReportAttachments : ""
+  DataSeries ||--o| SeriesPlotFile : ""
+  Files ||--o| SeriesPlotFile : ""
