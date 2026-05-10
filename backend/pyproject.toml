@@ -1,0 +1,44 @@
+[project]
+name = "experiments-backend"
+version = "0.1.0"
+description = "Physical experiment tracking backend"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic[email]>=2.7",
+    "pydantic-settings>=2.3",
+    "sqlalchemy[asyncio]>=2.0.30",
+    "asyncpg>=0.29",
+    "psycopg2-binary>=2.9",
+    "alembic>=1.13",
+    "aiobotocore>=2.13",
+    "python-jose[cryptography]>=3.3",
+    "passlib[bcrypt]>=1.7",
+    "bcrypt<5",
+    "python-multipart>=0.0.9",
+    "arq>=0.26",
+    "matplotlib>=3.9",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.23",
+    "testcontainers[postgres,minio]>=4.7",
+    "ruff>=0.5",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*", "worker*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
