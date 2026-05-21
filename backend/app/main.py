@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
+from app.core.db import apply_schema, close_pool
 from app.features.auth.router import router as auth_router
 from app.features.experiments.router import router as experiments_router
 from app.features.files.router import router as files_router
@@ -16,8 +17,10 @@ from app.storage.s3 import ensure_bucket
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await apply_schema()
     await ensure_bucket()
     yield
+    await close_pool()
 
 
 app = FastAPI(title="Experiments API", lifespan=lifespan)

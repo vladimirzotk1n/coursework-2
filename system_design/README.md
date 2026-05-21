@@ -29,7 +29,8 @@ DataSeries -> Files - хранение автосгенерированных г
 
 Поле FileRole - source/pdf/... - чтобы для reports отличать (в ненормализованной реляционной модели сделано через nullable FK, при нормализации вообще убирается)
 
-![ER-модель](/assets/ER.drawio.svg)
+![ER-модель](/assets/ER.drawio.svg) 
+# ПЕРЕДЕЛАТЬ EmperimentName -> Number
 
 ## Реляционная модель до нормализации:
 
@@ -277,4 +278,12 @@ CREATE UNIQUE INDEX uq_file_deletion_queue_pending
 | 14 | `CHECK` на размере файла | CHECK | — | Files | `size_bytes ≥ 0` | Размер не может быть отрицательным |
 
 ---
+
+
+
+
+
+
+
+
 

@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Form, HTTPException, status
 from pydantic import BaseModel, EmailStr, Field
-from sqlalchemy import or_, select
 
 from app.core.deps import DbDep
-from app.core.models import User
 from app.core.security import create_access_token, hash_password, verify_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -25,24 +23,23 @@ class UserOut(BaseModel):
     username: str
     email: EmailStr
 
-    model_config = {"from_attributes": True}
-
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def register(data: RegisterIn, db: DbDep) -> User:
-    existing = await db.scalar(
-        select(User).where(or_(User.username == data.username, User.email == data.email))
+async def register(data: RegisterIn, db: DbDep) -> dict:
+    existing = await db.fetchrow(
+        'SELECT user_id FROM "Users" WHERE username = $1 OR email = $2',
+        data.username,
+        data.email,
     )
     if existing is not None:
         raise HTTPException(status_code=409, detail="Username or email already in use")
-    user = User(
-        username=data.username,
-        email=data.email,
-        password_hash=hash_password(data.password),
+    row = await db.fetchrow(
+        'INSERT INTO "Users" (username, email, password_hash) VALUES ($1, $2, $3) RETURNING *',
+        data.username,
+        data.email,
+        hash_password(data.password),
     )
-    db.add(user)
-    await db.flush()
-    return user
+    return dict(row)
 
 
 @router.post("/login", response_model=TokenOut)
@@ -51,7 +48,7 @@ async def login(
     username: str = Form(...),
     password: str = Form(...),
 ) -> TokenOut:
-    user = await db.scalar(select(User).where(User.username == username))
-    if user is None or not verify_password(password, user.password_hash):
+    row = await db.fetchrow('SELECT * FROM "Users" WHERE username = $1', username)
+    if row is None or not verify_password(password, row["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return TokenOut(access_token=create_access_token(user.user_id))
+    return TokenOut(access_token=create_access_token(row["user_id"]))

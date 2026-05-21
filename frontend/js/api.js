@@ -1,6 +1,3 @@
-// Tiny fetch wrapper around the FastAPI backend.
-// All endpoint functions live here. No external dependencies.
-
 export const API_URL = window.__API_URL__ || "http://localhost:8000";
 const TOKEN_KEY = "auth_token";
 
