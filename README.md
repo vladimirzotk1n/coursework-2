@@ -17,4 +17,5 @@ docker compose down
 | OpenAPI docs      | http://localhost:8000/docs   |
 | MinIO S3          | http://localhost:9000        |
 | MinIO console     | http://localhost:9001        |
+
 | Postgres          | http://localhost:5432               |
